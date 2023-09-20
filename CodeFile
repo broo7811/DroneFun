@@ -1,0 +1,33 @@
+#Python code
+
+from codrone_edu.drone import *
+import time
+drone = Drone()
+drone.pair()
+varStop = input("input 1 or 0: ")
+drone.takeoff()
+
+drone.hover(3)
+drone.flip("back")  # send flip command
+time.sleep(4)  # wait for flip to complete
+
+drone.set_pitch(30) # move forward for 1 second
+drone.move(1)
+
+drone.set_pitch(-30) # move backward for 1 second
+drone.move(1)
+drone.hover(3)
+if varStop == "1":
+    drone.hover(3)
+    drone.flip("back")
+    time.sleep(4)
+    drone.land()
+    drone.close()
+else:
+    drone.hover(3)
+    drone.land()
+    drone.close()
+
+if input("input space: ") == " ":
+    drone.emergency_stop()
+    drone.close()
