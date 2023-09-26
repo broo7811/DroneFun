@@ -3,31 +3,34 @@
 from codrone_edu.drone import *
 import time
 drone = Drone()
-drone.pair()
-varStop = input("input 1 or 0: ")
-drone.takeoff()
+#drone.pair()
+#drone.takeoff()
 
-drone.hover(3)
-drone.flip("back")  # send flip command
-time.sleep(4)  # wait for flip to complete
-
-drone.set_pitch(30) # move forward for 1 second
-drone.move(1)
-
-drone.set_pitch(-30) # move backward for 1 second
-drone.move(1)
-drone.hover(3)
-if varStop == "1":
-    drone.hover(3)
-    drone.flip("back")
+bolFlag = True
+while(bolFlag):
+    battery = drone.get_battery()
+    print(battery)
+    #drone.hover(3)
     time.sleep(4)
-    drone.land()
-    drone.close()
-else:
-    drone.hover(3)
-    drone.land()
-    drone.close()
-
-if input("input space: ") == " ":
-    drone.emergency_stop()
-    drone.close()
+    varCmd = input("Insert Command: ")
+    if (varCmd == "w"):
+        print ("Forward 50cm")
+        #drone.move_forward(distance=50, units="cm", speed=1)
+        time.sleep(3)
+    if (varCmd == "s"):
+        print ("Backward 50cm")
+        #drone.move_backward(distance=50, units="cm", speed=1)
+        time.sleep(3)
+    if (varCmd == "a"):
+        print ("Left 50cm")
+        #drone.move_left(distance=50, units="cm", speed=1)
+        time.sleep(3)
+    if (varCmd == "d"):
+        print ("Right 50cm")
+        #drone.move_right(distance=50, units="cm", speed=1)
+        time.sleep(3)
+    if (varCmd == " "):
+        print ("Emergency stop")
+        #drone.emergency_stop()
+        #drone.close()
+        bolFlag = False
