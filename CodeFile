@@ -3,23 +3,23 @@ import multiprocessing
 from pynput.keyboard import Key, Listener
 import time
 running = True
-def emergencyStop(key):
-    global running
-    if key == Key.space:
-        running = False
+drone = Drone()
+drone.pair()
 
-def MoveAndTurn():
-    drone = Drone()
-    drone.pair()
+
+def emergencyStop(key):         #function that stops drone if key space is pressed
+    if key == Key.space:
+        drone.emergency_stop()
+def MoveAndTurn():              #function that turns and moves drone
     drone.takeoff()
     battery = drone.get_battery()
-    print(battery)
-    UserChoice = input("Input number of times it turns before landing: ")
-    if UserChoice != int:
+    print(battery)              #displays battery percentage
+    UserChoice = input("Input number of times it turns before landing: ")       #input for number of times drone turns before landing
+    if UserChoice != int:       #if the input above is not a number it becomes 0
         UserChoice = 0
     numDetect = 0
     bol = True
-    while bol:
+    while bol:              #while loop will run while bol is true
         if drone.detect_wall(125):
             drone.reset_move()
             drone.turn_left(90)
@@ -27,29 +27,34 @@ def MoveAndTurn():
             distance = drone.get_front_range()
             print("DISTANCE: " + str(distance))
             print(battery)
-            numDetect = numDetect + 1
-            if numDetect == int(UserChoice):
+            numDetect = numDetect + 1       #measures the number of times the drone has turned
+            if numDetect == int(UserChoice):    #if the number of times the drone has turned equals the input then the loop stops
                 bol = False
         drone.set_pitch(50)
         drone.move()
 
 
-with Listener(on_press=emergencyStop) as listener:
-    while running:
-        thread1 = multiprocessing.Process(target=emergencyStop, args=(" ",))
-        thread2 = multiprocessing.Process(target=MoveAndTurn())
+with Listener(on_press=emergencyStop) as listener:      #allows the emergency stop function to listen to the keyboard
+    while running:              #loop runs while running is true
+        thread1 = multiprocessing.Process(target=emergencyStop, args=(" ",))    #defines thread 1 as the emergency stop function
+        thread2 = multiprocessing.Process(target=MoveAndTurn())             #defines thread 2 as the move and turn function
 
-        thread1.start()
-        thread2.start()
+        thread1.start()     #thread 1 begins running
+        thread2.start()     #thread 2 begins running
 
-        thread1.join()
+        thread1.join()      #thread 1 and 2 begin running simultanously
         thread2.join()
 
-        t1alive = thread1.is_alive()
-        t2alive = thread2.is_alive()
+        t1alive = thread1.is_alive()    #thread 1 is alive
+        t2alive = thread2.is_alive()    #thread 2 is alive
 
-        thread1.terminate()
-        thread2.terminate()
-        exit()
+        thread1.terminate()     #thread 1 stops running
+        thread2.terminate()     #thread 2 stops running
+
+drone.land()
+drone.close()       #lands and stops the drone
 print("Program Complete")
-exit()
+t1 = threading.Thread(target=emergencyStop, args=(10,))     #
+t1.start()
+with Listener(on_press=emergencyStop) as listener:
+    listener.join()
